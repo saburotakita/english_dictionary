@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/mystyle.css">
+
+        <title>英単語のスクレイピング</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row mt-2">
+                <div class="col">
+                    <div id="message" class="alert alert-secondary text-center">
+                        以下の内容を入力してください
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5>検索先のサイトを選択</h5>
+                    <div class="form-check form-check">
+                        <input type="radio" id="radio-oxford" name="radios" class="form-check-input" value="oxford" checked>
+                        <label for="radio-oxford" class="form-check-label">Oxford Advanced Learner's Dictionary</label>
+                    </div>
+                    <div class="form-check form-check">
+                        <input type="radio" id="radio-longman" name="radios" class="form-check-input" value="longman">
+                        <label for="radio-longman" class="form-check-label">Longman Dictionary of Contemporary English</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <h5>単語のCSVファイル名を入力</h5>
+                    <div class="form-group">
+                        <input type="text" id="input-import-file" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5>出力するCSVファイル名を入力</h5>
+                    ※未入力や使えない文字がある場合は現在時刻で出力されます。
+                    <div class="form-group">
+                        <input type="text" id="input-export-file" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <button type="button" id="btn-search" class="btn btn-block btn-primary btn-lg">検索</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="js/jquery-3.6.0.slim.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="/eel.js"></script>
+        <script type="text/javascript" src="js/myscript.js"></script>
+    </body>
+</html>
