@@ -74,15 +74,9 @@ def scraping(site, import_file_name, export_file_name):
     try:
         # siteの値によって、検索先に使用するクラスを変更
         if site == 'oxford':
-            print('oxfordの処理開始')
             result = oxford_scraping.OxfordScraping().search(words)
-            print('oxfordの処理終了')
         else:
-            print('longmanの処理開始')
-            # 完成後、入れ替え
-            # result = longman_scraping.LongmanScraping().search(words)
-            result = []
-            print('oxfordの処理終了')
+            result = longman_scraping.LongmanScraping().search(words)
 
     # よく発生するseleniumの例外をキャッチ
     # サイトへの接続時間切れ

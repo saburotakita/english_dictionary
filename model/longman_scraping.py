@@ -1,5 +1,7 @@
 import time
+
 from .english_dictionary_scraping import EnglishDictionaryScraping
+
 
 class LongmanScraping(EnglishDictionaryScraping):
     def search(self, words):
@@ -10,7 +12,7 @@ class LongmanScraping(EnglishDictionaryScraping):
           各単語のdictentry要素から品詞名を取得し、該当する品詞かどうか調べる。品詞が引数と異なる場合返り値をNOT_FOUND_ROWにし、処理を終了する。
         ③ 品詞が一致した場合、該当のdictentry要素から必要項目を取得する
         """
-        driver = self._set_driver(False)
+        driver = self._set_driver()
 
         word_list = []
         for word in words:
@@ -27,23 +29,31 @@ class LongmanScraping(EnglishDictionaryScraping):
         # # サイトを開く
         driver.get(URL)
         time.sleep(4)
-        
-        # dirverからdictentry要素を取得
-        while True:
-            dic = driver.find_elements_by_class_name('dictentry')
-            # 取得した要素から品詞名を取得しword['品詞']と比較
-            for dic_driver in dic:
-                pos = dic_driver.find_element_by_class_name('POS').text
-                # pos = pos.text
-                # 品詞名が一致すれば必要項目を取得
-                if pos.lstrip('OPP ') == word['品詞']:
-                    results = self.get_search(word['単語'], dic_driver, driver)
-                    break
-                # 品詞名が一致しなければresultsにNOT_FOUND_ROWを返す
-                else:
-                    results['単語'], results['反意語'], results['類義語'], results['派生語'], results['発音（英）'], results['発音（米）'] = self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW
-                    pass
-            break
+
+        cur_url = driver.current_url
+        # URLと開いたURLが一致すれば処理を開始
+        if cur_url == URL:
+            # dirverからdictentry要素を取得
+            while True:
+                dic = driver.find_elements_by_class_name('dictentry')
+                # 取得した要素から品詞名を取得しword['品詞']と比較
+                for dic_driver in dic:
+                    try:
+                        pos = dic_driver.find_element_by_class_name('POS').text
+                        # 品詞名が一致すれば必要項目を取得
+                        if pos.lstrip('OPP ') == word['品詞']:
+                            results = self.get_search(word['単語'], dic_driver, driver)
+                            break
+                        else:
+                        # 品詞名が一致しなければresultsにNOT_FOUND_ROWを返す
+                            results['単語'], results['反意語'], results['類義語'], results['派生語'], results['発音（英）'], results['発音（米）'] = word['単語'], self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW
+                            break 
+                    except:
+                        pass
+                break
+        # URLから検索できなければresultsにNOT_FOUND_ROWを返す
+        else:
+            results['単語'], results['反意語'], results['類義語'], results['派生語'], results['発音（英）'], results['発音（米）'] = word['単語'], self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW
         return results
     
     # 取得したデータから不要な文字列の削除
@@ -116,6 +126,7 @@ class LongmanScraping(EnglishDictionaryScraping):
             # 不要な文字列の削除
             wordfams = wordfams.lstrip('語群 ')
             wordfams = wordfams.replace(' ', '/')
+            wordfams = wordfams.replace('/≠/', ' ≠ ')
         except:
             wordfams = self.NOT_FOUND_COL
 
