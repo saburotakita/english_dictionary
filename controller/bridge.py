@@ -80,18 +80,21 @@ def scraping(site, import_file_name, export_file_name):
 
     # よく発生するseleniumの例外をキャッチ
     # サイトへの接続時間切れ
+    #　こちらのエラーに関しても、ログ出力と同様に、サイトに接続できませんでした。時間をおいてからツールを再度実行してください。の方が分かりやすいと思います。
     except exceptions.TimeoutException as e:
         eel.change_message('error', 'サイトに接続できませんでした。')
         eel.enable_search_button()
         err_log_file.write(e)
         return None
     # Webドライバー関連の例外
+    # webdriverexceptionのエラーでよくみられるのが、driverのバージョン違いによるエラーです。ですので、driver1ファイルとjsonファイルを削除して再度ツールを実行してください。のような出力の方が分かりやすいです。
     except  exceptions.WebDriverException as e:
         eel.change_message('error', 'ブラウザとの接続に失敗しました。')
         eel.enable_search_button()
         err_log_file.write(e)
         return None
     # そのほか、想定外の例外をまとめて処理
+    #　こちらも同様に、作成されたログファイルを送ってくださいの方が分かりやすいです
     except Exception as e:
         eel.change_message('error', '英単語の取得に失敗しました。')
         eel.enable_search_button()
