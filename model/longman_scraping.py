@@ -2,7 +2,8 @@ import time
 
 from .english_dictionary_scraping import EnglishDictionaryScraping
 
-
+#beautifulsoupでの処理に変更をお願いいたします。
+#書き方の問題になってしまいますが、main関数が一番下にくるようにするのが一般的かと思います。main関数で使用している関数を上に書きます。
 class LongmanScraping(EnglishDictionaryScraping):
     def search(self, words):
         """
@@ -28,12 +29,14 @@ class LongmanScraping(EnglishDictionaryScraping):
         URL = URL + word['単語']
         # # サイトを開く
         driver.get(URL)
+        # timeで対応するのではなく、waitを用いてページの読み込みが完了するまで待機するのように変更をお願いいたします。
         time.sleep(4)
 
         cur_url = driver.current_url
         # URLと開いたURLが一致すれば処理を開始
         if cur_url == URL:
             # dirverからdictentry要素を取得
+            # while文を利用している意味がよく分かりません。for文のみではいけないのでしょうか？
             while True:
                 dic = driver.find_elements_by_class_name('dictentry')
                 # 取得した要素から品詞名を取得しword['品詞']と比較
@@ -56,6 +59,8 @@ class LongmanScraping(EnglishDictionaryScraping):
             results['単語'], results['反意語'], results['類義語'], results['派生語'], results['発音（英）'], results['発音（米）'] = word['単語'], self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW, self.NOT_FOUND_ROW
         return results
     
+    # 一度listに格納した後に不要な文字列を削除している理由はなにかあるのでしょうか？
+    # 二度listに格納する行為をおこなうと、プログラムが格納しているlistを記憶するために無駄な容量を使用してしまいます。
     # 取得したデータから不要な文字列の削除
     def delite(self, ele_list, delite_word):
         word_list = []
@@ -65,6 +70,7 @@ class LongmanScraping(EnglishDictionaryScraping):
             word_list.append(value.lstrip(delite_word))
         return word_list
     
+    # joinを用いるともっときれいに書けるかと思います。
     # 取得したデータをWORD_SEPARATORで区切る
     def return_value(self, value_list):
         i = 0
@@ -83,6 +89,7 @@ class LongmanScraping(EnglishDictionaryScraping):
         syn_list = []
         bre_list = []
 
+        # while文を利用している理由をお伺いしたいです。コードを見る限り、while文を使用する理由はないかと思います。
         # 反意語取得
         while True:
             opp = dic_driver.find_elements_by_class_name('OPP')
@@ -97,7 +104,8 @@ class LongmanScraping(EnglishDictionaryScraping):
             # 取得したデータをWORD_SEPARATORで区切りoppに代入
             opp = self.return_value(opp_list)
             break
-
+        
+        # こちらも同様にwhile文を使用しなくても書けるかと思います
         # 類義語取得
         while True:
             syn = dic_driver.find_elements_by_class_name('SYN')
@@ -119,7 +127,8 @@ class LongmanScraping(EnglishDictionaryScraping):
             # 取得したデータをWORD_SEPARATORで区切りsynに代入
             syn = self.return_value(syn_list)
             break
-
+        
+        # exceptですべての例外を除くようにしないでください
         # 派生語取得
         try:
             wordfams = driver.find_element_by_class_name('wordfams').text
