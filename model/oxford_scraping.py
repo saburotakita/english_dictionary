@@ -7,6 +7,7 @@ from .english_dictionary_scraping import EnglishDictionaryScraping
 
 URL ="https://www.oxfordlearnersdictionaries.com/definition/english/{word}_{seq}"
 
+#driverのキャッシュがたまってしまうと、スクレイピングするスピードが遅くなってしまうので、30ページごとにdriverを定義しなおすなどの対応をした方がスクレイピングのスピードが速くなります
 class OxfordScraping(EnglishDictionaryScraping):
 
     OPP_TEXT = "synonym"
