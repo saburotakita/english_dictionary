@@ -22,7 +22,7 @@ $(function(){
         }
 
         // メッセージの内容を変更
-        $message.text(text)
+        $message.html(text)
     }
 
     // 検索ボタンの有効化、無効化変更
@@ -50,6 +50,6 @@ $(function(){
         const site = $('input:radio[name="radios"]:checked').val();
         const import_name = $('#input-import-file').val();
         const export_name = $('#input-export-file').val();
-        eel.scraping(site, import_name, export_name)
+        eel.run(site, import_name, export_name)
     });
 });

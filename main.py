@@ -11,7 +11,7 @@ def main():
     endpoint = 'index.html'
     # ウィンドウサイズ
     size_x = 600
-    size_y = 500
+    size_y = 550
     size = (size_x, size_y)
 
     # パラメータを設定して起動

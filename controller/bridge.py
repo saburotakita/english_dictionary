@@ -1,29 +1,52 @@
+import sys
+
 import eel
 from selenium.common import exceptions
 
 from model import csv_file
-from model import exception_log
+from model import log_file
 from model import longman_scraping
 from model import oxford_scraping
 
 
+CLOSE = 0
+
+
 @eel.expose
+def run(site, import_file_name, export_file_name):
+    # ボタンを無効化
+    eel.disable_search_button()
+
+    # スクレイピング
+    result = scraping(site, import_file_name, export_file_name)
+
+    # None以外は例外をログへ書き出し
+    if result is not None:
+        f = log_file.LogFile()
+        f.write_line(str(result))
+
+    # ボタンの有効化
+    eel.enable_search_button()
+
+    sys.exit(0)
+
+
 def scraping(site, import_file_name, export_file_name):
     """
     処理の流れ
     １．入力内容のチェック
-    ２．ボタンを無効化
-    ３．CSVファイルの読み込み
-    ４．読み込み内容のチェック
-    ５．スクレイピング
-    ６．結果の書き出し
-    ７．ボタンの有効化
+    ２．CSVファイルの読み込み
+    ３．読み込み内容のチェック
+    ４．スクレイピング
+    ５．結果の書き出し
 
     Args:
         site (str): 検索先の辞書サイト
         import_file_name (str): 入力ファイル名
         export_file_name (str): 出力ファイル名
     """
+
+    eel.change_message('running', '実行の準備をしています')
 
     # １．入力内容のチェック
     # ファイル名が入力されている（空文字でない）ことをチェック
@@ -32,17 +55,12 @@ def scraping(site, import_file_name, export_file_name):
         eel.change_message('error', 'ファイル名を入力してください。')
         return None
 
-    # ２．ボタンを無効化
-    eel.disable_search_button()
-    eel.change_message('running', '実行中です・・・')
-
-    # ３．CSVファイルの読み込み
+    # ２．CSVファイルの読み込み
     import_file = csv_file.CsvFile(import_file_name)
     # ファイルが存在するかチェック
     # 存在しなければ、ボタンを有効化して終了
     if not import_file.exist():
         eel.change_message('error', 'そのCSVファイルは存在しません。')
-        eel.enable_search_button()
         return None
     # 読み込み
     # ファイルがShift-JISで読み込めるか
@@ -50,27 +68,22 @@ def scraping(site, import_file_name, export_file_name):
         words = import_file.read('shift_jis')
     except UnicodeDecodeError as e:
         eel.change_message('error', '単語ファイルはShift-JISで入力してください。')
-        eel.enable_search_button()
         return None
 
-    # ４．読み込み内容のチェック
+    # ３．読み込み内容のチェック
     # 各チェックを通らなければ、ボタンを有効化して終了
     # 1つ以上の行があるかチェック
     if len(words) < 1:
         eel.change_message('error', '単語ファイルに単語が入力されていません。')
-        eel.enable_search_button()
         return None
 
     # 単語と品詞の列があるかチェック
     if not({'単語', '品詞'} <= set(words[0].keys())):
         eel.change_message('error', '"単語"と"品詞"がファイルに含まれていません。')
-        eel.enable_search_button()
         return None
 
-    # ５．スクレイピング
+    # ４．スクレイピング
     # エラーログを書き込むためのインスタンスを用意
-    err_log_file = exception_log.ExceptionLog()
-
     try:
         # siteの値によって、検索先に使用するクラスを変更
         if site == 'oxford':
@@ -80,32 +93,23 @@ def scraping(site, import_file_name, export_file_name):
 
     # よく発生するseleniumの例外をキャッチ
     # サイトへの接続時間切れ
-    #　こちらのエラーに関しても、ログ出力と同様に、サイトに接続できませんでした。時間をおいてからツールを再度実行してください。の方が分かりやすいと思います。
     except exceptions.TimeoutException as e:
-        eel.change_message('error', 'サイトに接続できませんでした。')
-        eel.enable_search_button()
-        err_log_file.write(e)
-        return None
+        eel.change_message('error', 'サイトに接続できませんでした。<br>時間をおいてからツールを再度実行してください。')
+        return e
     # Webドライバー関連の例外
-    # webdriverexceptionのエラーでよくみられるのが、driverのバージョン違いによるエラーです。ですので、driver1ファイルとjsonファイルを削除して再度ツールを実行してください。のような出力の方が分かりやすいです。
     except  exceptions.WebDriverException as e:
-        eel.change_message('error', 'ブラウザとの接続に失敗しました。')
-        eel.enable_search_button()
-        err_log_file.write(e)
-        return None
+        eel.change_message('error', 'driver1ファイルとjsonファイルを削除して<br>再度ツールを実行してください。')
+        return e
     # そのほか、想定外の例外をまとめて処理
-    #　こちらも同様に、作成されたログファイルを送ってくださいの方が分かりやすいです
     except Exception as e:
-        eel.change_message('error', '英単語の取得に失敗しました。')
-        eel.enable_search_button()
-        err_log_file.write(e)
-        return None
+        eel.change_message('error', 'ツールの実行に失敗しました。<br>時間をおいても改善されない場合は、<br>作成されたログファイルを送ってください。')
+        return e
 
-    # ６．結果の書き出し
+    # ５．結果の書き出し
     if result:
         export_file = csv_file.CsvFile(export_file_name)
         export_file.write(result, 'utf-8_sig')
 
-    # ７．ボタンの有効化
-    eel.enable_search_button()
     eel.change_message('success', '完了しました。')
+
+    return None
