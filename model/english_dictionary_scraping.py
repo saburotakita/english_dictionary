@@ -1,5 +1,8 @@
+import eel
 from selenium import webdriver
 from webdriver_manager import chrome
+
+from .log_file import LogFile
 
 
 class EnglishDictionaryScraping:
@@ -35,6 +38,10 @@ class EnglishDictionaryScraping:
 
     # 複数の類義語などの区切り
     WORD_SEPARATOR = '/'
+    
+    def __init__(self):
+        self._cnt = 0
+        self._log_file = LogFile()
 
     def search(self, words):
         """
@@ -65,38 +72,54 @@ class EnglishDictionaryScraping:
         # Chromeドライバーの読み込み
         options = webdriver.ChromeOptions()
 
-        # ヘッドレスモード（画面非表示モード）をの設定
+        # ヘッドレスモード（画面非表示モード）の設定
         if is_headless:
             options.add_argument('--headless')
-            
-        #optionは下記のものを使用すると早くなりますので、利用してください
-#         options.add_argument('--headless')
-#         options.add_argument('--disable-gpu')
-#         options.add_argument('--no-sandbox')
-#         options.add_argument('log-level=3')
-#         options.add_argument('--ignore-ssl-errors')
-#         options.add_argument('--incognito')          # シークレットモードの設定を付与
-#         options.add_argument('--user-agent=Chrome/87.0.42.88')
-#         options.add_argument('--single-process')
-#         options.add_argument('--start-maximized')
-#         options.add_argument('--ignore-certificate-errors')
-#         options.add_argument('--allow-running-insecure-content')
-#         options.add_argument('--disable-web-security')
-#         options.add_argument('--disable-desktop-notifications')
-#         options.add_argument('--disable-application-cache')
-#         options.add_argument("--disable-extensions")
-#         options.add_argument('--lang=ja')
 
         # 起動オプションの設定
-        options.add_argument(
-            '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
-                AppleWebKit/537.36 (KHTML, like Gecko) \
-                    Chrome/83.0.4103.116 Safari/537.36')
-
-        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')
+        options.add_argument('log-level=3')
         options.add_argument('--ignore-ssl-errors')
         options.add_argument('--incognito')
+        options.add_argument('--user-agent=Chrome/87.0.42.88')
+        options.add_argument('--single-process')
+        options.add_argument('--start-maximized')
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--allow-running-insecure-content')
+        options.add_argument('--disable-web-security')
+        options.add_argument('--disable-desktop-notifications')
+        options.add_argument('--disable-application-cache')
+        options.add_argument("--disable-extensions")
+        options.add_argument('--lang=ja')
 
         # ChromeのWebDriverオブジェクトを作成する。
         return webdriver.Chrome(
             chrome.ChromeDriverManager().install(), options=options)
+
+    def _set_ui_message(self, max_cnt):
+        self._cnt += 1
+        eel.change_message('running', f'実行中です・・・({self._cnt}/{max_cnt}単語目)')
+        
+    def _write_log(self, data, opposite=True, synonym=True, derivative=True,
+                   pronunciation_uk=True, pronunciation_us=True):
+        messages = []
+        
+        messages.append(f"単語：{data['単語']}\n")
+        messages.append(self._get_log_message(data['反対語'], '反対語', opposite))
+        messages.append(self._get_log_message(data['類義語'], '類義語', synonym))
+        messages.append(self._get_log_message(data['派生語'], '派生語', derivative))
+        messages.append(self._get_log_message(data['発音（英）'], '発音（英）', pronunciation_uk))
+        messages.append(self._get_log_message(data['発音（米）'], '発音（米）', pronunciation_us))
+
+        self._log_file.write_lines(messages)
+        self._log_file.write_separater()
+
+    def _get_log_message(self, word, head, has_searched):
+        if has_searched:
+            if word == self.NOT_FOUND_COL:
+                return f"{head}：見つかりませんでした\n"
+            else:
+                return f"{head}：{word}\n"
+        else:
+            return f"{head}：取得しない設定です\n"
