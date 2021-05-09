@@ -6,11 +6,19 @@ class LogFile:
     """
     ログファイルの管理
     """
-    def __init__(self, file_path=None):
-        if file_path is None:
+    def __init__(self, file_name=None, dir_name=None):
+        if file_name is None:
             now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            file_path = f'{now}.log'
-        self._path = pathlib.Path(file_path)
+            file_name = f'{now}.log'
+
+        if dir_name is None:
+            dir_name = 'log'
+            
+
+        dir_path = pathlib.Path(dir_name)
+        dir_path.mkdir(exist_ok=True, parents=True)
+
+        self._path = pathlib.Path(dir_path / file_name)
 
     def write_line(self, message):
         """1行書き込み"""

@@ -1,13 +1,16 @@
 import csv
 import pathlib
+import re
 
 
 class CsvFile:
     """
     CSVファイル
     """
-    def __init__(self, file_path):
-        self._path = pathlib.Path(file_path)
+    def __init__(self, file_name):
+        # Windowsファイルで使えない文字の置き換え
+        file_name = re.sub(r'[\\/:*?"<>|]+', '_', file_name)
+        self._path = pathlib.Path(file_name)
 
     def exist(self):
         """ファイルの存在を確認
