@@ -39,9 +39,15 @@ class EnglishDictionaryScraping:
     # 複数の類義語などの区切り
     WORD_SEPARATOR = '/'
     
-    def __init__(self):
+    def __init__(self, driver_path=None):
+        """
+        Args:
+            driver_path (str, optional): webドライバーのパス
+                未設定の場合は、自動ダウンロード
+        """
         self._cnt = 0
         self._log_file = LogFile()
+        self._driver_path = driver_path
 
     def search(self, words):
         """
@@ -72,6 +78,10 @@ class EnglishDictionaryScraping:
         # Chromeドライバーの読み込み
         options = webdriver.ChromeOptions()
 
+        # ドライバー未ダウンロードなら、読み込み
+        if self._driver_path is None:
+            self._driver_path = chrome.ChromeDriverManager().install()
+
         # ヘッドレスモード（画面非表示モード）の設定
         if is_headless:
             options.add_argument('--headless')
@@ -94,8 +104,7 @@ class EnglishDictionaryScraping:
         options.add_argument('--lang=ja')
 
         # ChromeのWebDriverオブジェクトを作成する。
-        return webdriver.Chrome(
-            chrome.ChromeDriverManager().install(), options=options)
+        return webdriver.Chrome(self._driver_path, options=options)
 
     def _set_ui_message(self, max_cnt):
         """
