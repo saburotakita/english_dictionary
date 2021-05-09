@@ -59,7 +59,7 @@ class EnglishDictionaryScraping:
             (list[dict]): 1つの単語の辞書を集めたリスト
             {
                 '単語': value,
-                '反対語': value,
+                '反意語': value,
                 '類義語': value,
                 '派生語': value,
                 '発音（英）': value,
@@ -113,7 +113,7 @@ class EnglishDictionaryScraping:
 
         Args:
             data (dict): 単語の検索結果
-            opposite (bool, optional): 反対語を検索する設定か
+            opposite (bool, optional): 反意語を検索する設定か
             synonym (bool, optional): 類義語を検索する設定か
             derivative (bool, optional): 派生語を検索する設定か
             pronunciation_uk (bool, optional): 発音（英）を検索する設定か
@@ -121,14 +121,14 @@ class EnglishDictionaryScraping:
 
         書き出すログの形式:
             単語：run
-            反対語：organize/smuggle/ladder
+            反意語：organize/smuggle/ladder
             類義語：見つかりませんでした
             派生語：取得しない設定です
             発音（英）：https://www...
             発音（米）：https://www...
             ------------------------------
             単語：wrong
-            反対語：mistaken
+            反意語：mistaken
             類義語：right
             派生語：取得しない設定です
             発音（英）：https://www...
@@ -138,7 +138,7 @@ class EnglishDictionaryScraping:
         messages = []
 
         messages.append(f"単語：{data['単語']}\n")
-        messages.append(self._get_log_message(data['反対語'], '反対語', opposite))
+        messages.append(self._get_log_message(data['反意語'], '反意語', opposite))
         messages.append(self._get_log_message(data['類義語'], '類義語', synonym))
         messages.append(self._get_log_message(data['派生語'], '派生語', derivative))
         messages.append(self._get_log_message(data['発音（英）'], '発音（英）', pronunciation_uk))
@@ -157,7 +157,7 @@ class EnglishDictionaryScraping:
 
         Returns:
             [str]: 1行分のログ
-                反対語：mistaken
+                反意語：mistaken
         """
         if has_searched:
             if word == self.NOT_FOUND_COL:

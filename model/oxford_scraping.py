@@ -71,7 +71,7 @@ class OxfordScraping(EnglishDictionaryScraping):
                 """
                 # 指定の単語・品詞の組み合わせが存在しない場合
                 if part_of_speech == "":
-                    data = {"単語": word["単語"], "反対語": EnglishDictionaryScraping.NOT_FOUND_ROW, "類義語": EnglishDictionaryScraping.NOT_FOUND_ROW, "派生語": EnglishDictionaryScraping.NOT_FOUND_ROW, "発音（英）": EnglishDictionaryScraping.NOT_FOUND_ROW, "発音（米）": EnglishDictionaryScraping.NOT_FOUND_ROW}
+                    data = {"単語": word["単語"], "反意語": EnglishDictionaryScraping.NOT_FOUND_ROW, "類義語": EnglishDictionaryScraping.NOT_FOUND_ROW, "派生語": EnglishDictionaryScraping.NOT_FOUND_ROW, "発音（英）": EnglishDictionaryScraping.NOT_FOUND_ROW, "発音（米）": EnglishDictionaryScraping.NOT_FOUND_ROW}
                     self._write_log(data, derivative=False)
                     result.append(data)
                     continue
@@ -86,7 +86,7 @@ class OxfordScraping(EnglishDictionaryScraping):
                 synonym = self._get_opp_or_syn(soup, OxfordScraping.SYN_TEXT)
 
                 # 結果を格納する
-                data = {"単語": word["単語"], "反対語": opposite, "類義語": synonym, "派生語": EnglishDictionaryScraping.NOT_FOUND_COL, "発音（英）": phons_br, "発音（米）": phons_n_am}
+                data = {"単語": word["単語"], "反意語": opposite, "類義語": synonym, "派生語": EnglishDictionaryScraping.NOT_FOUND_COL, "発音（英）": phons_br, "発音（米）": phons_n_am}
                 self._write_log(data, derivative=False)
                 result.append(data)
 

@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 import eel
 from selenium.common import exceptions
