@@ -1,10 +1,10 @@
 import sys
-import traceback
 
 import eel
 from selenium.common import exceptions
 
 from model import csv_file
+from model import excel_file
 from model import log_file
 from model import longman_scraping
 from model import oxford_scraping
@@ -111,13 +111,13 @@ def scraping(site, import_file_name, export_file_name):
         return e
 
     # ５．結果の書き出し
-    # 拡張子が.csvで入力されていなければ追記
-    if export_file_name[3:] != '.csv':
-        export_file_name += '.csv'
+    # 拡張子が.xlsxで入力されていなければ追記
+    if export_file_name[4:] != '.xlsx':
+        export_file_name += '.xlsx'
 
     if result:
-        export_file = csv_file.CsvFile(export_file_name)
-        export_file.write(result, 'utf-8_sig')
+        export_file = excel_file.ExcelDictionaryFile(export_file_name)
+        export_file.write(result)
 
     eel.change_message('success', '完了しました。')
 
