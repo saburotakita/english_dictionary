@@ -10,8 +10,8 @@ def main():
     # 最初に読み込むHTMLファイルのルートディレクトリからのパス
     endpoint = 'index.html'
     # ウィンドウサイズ
-    size_x = 600
-    size_y = 550
+    size_x = 550
+    size_y = 500
     size = (size_x, size_y)
 
     # パラメータを設定して起動

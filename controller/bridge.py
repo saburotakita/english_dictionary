@@ -56,6 +56,10 @@ def scraping(site, import_file_name, export_file_name):
         return None
 
     # ２．CSVファイルの読み込み
+    # 拡張子が.csvで入力されていなければ追記
+    if import_file_name[3:] != '.csv':
+        import_file_name += '.csv'
+
     import_file = csv_file.CsvFile(import_file_name)
     # ファイルが存在するかチェック
     # 存在しなければ、ボタンを有効化して終了
@@ -106,6 +110,10 @@ def scraping(site, import_file_name, export_file_name):
         return e
 
     # ５．結果の書き出し
+    # 拡張子が.csvで入力されていなければ追記
+    if export_file_name[3:] != '.csv':
+        export_file_name += '.csv'
+
     if result:
         export_file = csv_file.CsvFile(export_file_name)
         export_file.write(result, 'utf-8_sig')
