@@ -9,8 +9,8 @@ URL ="https://www.oxfordlearnersdictionaries.com/definition/english/{word}_{seq}
 
 class OxfordScraping(EnglishDictionaryScraping):
 
-    OPP_TEXT = "synonym"
-    SYN_TEXT = "opposite"
+    OPP_TEXT = "opposite"
+    SYN_TEXT = "synonym"
     RESET_PERIOD= 30
 
     def search(self, words):
@@ -31,14 +31,12 @@ class OxfordScraping(EnglishDictionaryScraping):
 
         result = []
 
-        # 滝田
         max_cnt = len(words)
         try:
             
             """① 引数の単語リストごとに以下の処理を行う。
             """
             for index, word in enumerate(words):
-                # 滝田
                 # UIのメッセージを変更
                 self._set_ui_message(max_cnt)
 
@@ -75,7 +73,6 @@ class OxfordScraping(EnglishDictionaryScraping):
                 # 指定の単語・品詞の組み合わせが存在しない場合
                 if part_of_speech == "":
                     data = {"単語": word["単語"], "反意語": EnglishDictionaryScraping.NOT_FOUND_ROW, "類義語": EnglishDictionaryScraping.NOT_FOUND_ROW, "派生語": EnglishDictionaryScraping.NOT_FOUND_ROW, "発音（英）": EnglishDictionaryScraping.NOT_FOUND_ROW, "発音（米）": EnglishDictionaryScraping.NOT_FOUND_ROW}
-                    # 滝田
                     self._write_log(data, derivative=False)
                     result.append(data)
                     continue
@@ -91,7 +88,6 @@ class OxfordScraping(EnglishDictionaryScraping):
 
                 # 結果を格納する
                 data = {"単語": word["単語"], "反意語": opposite, "類義語": synonym, "派生語": EnglishDictionaryScraping.NOT_FOUND_COL, "発音（英）": phons_br, "発音（米）": phons_n_am}
-                # 滝田
                 self._write_log(data, derivative=False)
                 result.append(data)
 
